@@ -15,6 +15,7 @@ let speed = 1;
 let keys = [];
 let obstacles = [];
 let frame = 0;
+let score = 0;
 
 // CLASSES
 // Car
@@ -23,7 +24,7 @@ class Car {
     this.width = 158 /4;
     this.height = 319 / 4;
     this.x = canvas.width / 2 - this.width/2;
-    this.y = canvas. height - this.height;
+    this.y = canvas. height - this.height - 20;
   }
   draw() {
     // ctx.fillStyle = 'green';
@@ -45,12 +46,12 @@ const car = new Car();
 class Obstacle {
   constructor(){
     this.width = randomInt(100, 300);
-    this.height = 10;
+    this.height = 15;
     this.x = randomInt(0, canvas.width - this.width);
     this.y = 0;
   }
   draw() {
-    ctx.fillStyle = 'red';
+    ctx.fillStyle = '#C70039';
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }
   update() {
@@ -74,6 +75,7 @@ function animate() {
   createNewObstacle();
   updateObstacles();
   frame++;
+  calculateScore();
   requestAnimationFrame(animate);
 }
 
@@ -90,11 +92,24 @@ function createNewObstacle() {
 
 function updateObstacles() {
   obstacles.forEach(obstacle => {
-    obstacle.draw();
-    obstacle.update();
+    if (obstacle.y + obstacle.height < canvas.height) {
+      obstacle.draw();
+      obstacle.update();
+    } else obstacles.shift();
   })
 }
 
 function randomInt(min, max) { // min and max included 
   return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function calculateScore() {
+  obstacles.forEach(obstacle => {
+    if (obstacle.y + obstacle.height === car.y + car.height) {
+      score += 1;
+    }
+  })
+  ctx.fillStyle = "white";
+  ctx.font = '30px Verdana';
+  ctx.fillText(`Score ${score}`, 290, 60);
 }
